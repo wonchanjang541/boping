@@ -89,5 +89,35 @@ async def cmd(i:discord.Interaction):
 @bot.tree.command(name='보핑초기화',description='새 보라색 서핑보드를 뽑습니다')
 async def rst(i:discord.Interaction):
  x=new(i.user.id);await i.response.send_message(f"🔄 새 보드: 공격력 {x['atk']} / 이동속도 {x['speed']}",ephemeral=True)
+
+@bot.tree.command(name="보핑랭킹", description="보라색 서핑보드 강화 랭킹")
+async def surfboard_rank(i:discord.Interaction):
+    if not allowed(i):
+        return await i.response.send_message("❌ 이 게시판에서는 사용할 수 없습니다.", ephemeral=True)
+
+    con = connect()
+    rows = con.execute("SELECT * FROM items WHERE destroyed=0").fetchall()
+    con.close()
+
+    ranked = []
+    for r in rows:
+        x = dict(r)
+        grade = x["atk"] + (x["str_stat"] * 0.2)
+        ranked.append((grade, x["atk"], x["str_stat"], x["user_id"]))
+
+    ranked.sort(key=lambda v: (v[0], v[1], v[2]), reverse=True)
+
+    if not ranked:
+        return await i.response.send_message("아직 랭킹 기록이 없습니다.")
+
+    lines = []
+    for n, (grade, atk, strength, uid) in enumerate(ranked[:10], 1):
+        lines.append(
+            f"**{n}위** <@{uid}> — **{grade:.1f}급** "
+            f"(공격력 {atk} / STR +{strength})"
+        )
+
+    await i.response.send_message("🏄 **보라색 서핑보드 TOP 10**\n\n" + "\n".join(lines))
+
 if not TOKEN:raise RuntimeError('DISCORD_BOT_TOKEN을 설정해주세요.')
 bot.run(TOKEN)
