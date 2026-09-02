@@ -80,8 +80,15 @@ class V(discord.ui.View):
   if i.user.id!=self.uid:return await i.response.send_message('❌ 본인의 장비만 초기화할 수 있습니다.',ephemeral=True)
   await i.response.defer();x=new(i.user.id);pic=await asyncio.to_thread(render,x);await i.edit_original_response(embed=emb(x,'🔄 새 서핑보드 생성'),attachments=[discord.File(pic,filename='surfboard.jpg')],view=V(i.user.id))
 bot=commands.Bot(command_prefix='!',intents=discord.Intents.default())
+GUILD_ID = 1536042800754466906
+
 @bot.event
-async def on_ready():await bot.tree.sync();print('로그인:',bot.user)
+async def on_ready():
+    guild = discord.Object(id=GUILD_ID)
+    bot.tree.copy_global_to(guild=guild)
+    synced = await bot.tree.sync(guild=guild)
+    print(f"로그인 완료: {bot.user} / 서버 명령어 {len(synced)}개 동기화 완료")
+
 @bot.tree.command(name='보핑강화',description='보라색 서핑보드 강화 시뮬레이션')
 async def cmd(i:discord.Interaction):
  if not allowed(i):return await i.response.send_message('❌ 이 게시판에서는 사용할 수 없습니다.',ephemeral=True)
