@@ -23,7 +23,9 @@ def allowed(i):
  ch=i.channel; return bool(ch and (ch.id==ALLOWED_CHANNEL_ID or getattr(ch,'parent_id',None)==ALLOWED_CHANNEL_ID))
 def color(x):
  b=(x['atk']-x['base_atk'])+x['str_stat']+x['pdef']
- if x['used']==0:return '흰색',(245,245,245)
+ # 주문서 사용 횟수가 아니라 실제로 오른 합스탯만으로 색상 판정
+ # 실패해서 합스탯 상승이 0이면 계속 흰색
+ if b<=0:return '흰색',(245,245,245)
  if b<=5:return '주황색',(255,165,50)
  if b<=22:return '파란색',(80,160,255)
  if b<=39:return '보라색',(190,100,255)
