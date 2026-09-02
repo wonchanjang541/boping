@@ -49,7 +49,7 @@ def render(x):
  if x['destroyed']:d.text((720,290),'아이템 파괴',font=F1,fill=(255,80,80),anchor='mm')
  else:
   for j,t in enumerate([f"공격력 : +{x['atk']} (기본 {x['base_atk']})",f"STR : +{x['str_stat']}",f"물리방어력 : +{x['pdef']}",f"이동속도 : +{x['speed']}",f"남은 업횟 : {x['slots']} / 7"]):d.text((380,160+j*65),t,font=F2,fill='white')
- rules=['폴공 30% : 공격력 +5 / STR +3 / 물리방어력 +1','실패 시 50% 확률 아이템 파괴','폴공 60% : 공격력 +2 / STR +1','폴공 100% : 공격력 +1','백의 1% : 성공 업횟 +1 / 실패 시 2% 파괴','백의 3% : 성공 업횟 +1 / 실패 시 6% 파괴']
+ rules=['폴공 30% : 공격력 +5 / STR +3 / 물리방어력 +1','실패 시 50% 확률 아이템 파괴','폴공 60% : 공격력 +2 / STR +1','폴공 100% : 공격력 +1','백줌 1% : 성공 업횟 +1 / 실패 시 2% 파괴','백줌 3% : 성공 업횟 +1 / 실패 시 6% 파괴']
  for j,t in enumerate(rules):d.text((55,590+j*44),t,font=F3,fill='white')
  b=io.BytesIO();im.save(b,'JPEG',quality=92);b.seek(0);return b
 def emb(x,title='보라색 서핑보드 강화'):
@@ -62,8 +62,8 @@ class V(discord.ui.View):
   if k=='30':r=normal(x,.30,5,3,1,.50);lab='폴공 30%'
   elif k=='60':r=normal(x,.60,2,1);lab='폴공 60%'
   elif k=='100':r=normal(x,1,1);lab='폴공 100%'
-  elif k=='w1':r=white(x,.01,.02);lab='백의 1%'
-  else:r=white(x,.03,.06);lab='백의 3%'
+  elif k=='w1':r=white(x,.01,.02);lab='백줌 1%'
+  else:r=white(x,.03,.06);lab='백줌 3%'
   x=get(i.user.id);titles={'success':f'✨ {lab} 성공!','fail':f'💨 {lab} 실패','boom':f'💥 {lab} 실패 — 아이템 파괴!','destroyed':'💥 이미 파괴된 아이템입니다.','no_slots':'❌ 남은 업횟이 없습니다.','full_slots':'❌ 복구할 업횟이 없습니다.'};pic=await asyncio.to_thread(render,x);await i.edit_original_response(embed=emb(x,titles[r]),attachments=[discord.File(pic,filename='surfboard.jpg')],view=V(i.user.id))
  @discord.ui.button(label='⚔️ 폴공 30%',style=discord.ButtonStyle.danger,row=0)
  async def a(self,i,b):await self.go(i,'30')
@@ -71,9 +71,9 @@ class V(discord.ui.View):
  async def b(self,i,b):await self.go(i,'60')
  @discord.ui.button(label='⚔️ 폴공 100%',style=discord.ButtonStyle.secondary,row=0)
  async def c(self,i,b):await self.go(i,'100')
- @discord.ui.button(label='📜 백의 1%',style=discord.ButtonStyle.secondary,row=1)
+ @discord.ui.button(label='📜 백줌 1%',style=discord.ButtonStyle.secondary,row=1)
  async def d(self,i,b):await self.go(i,'w1')
- @discord.ui.button(label='📜 백의 3%',style=discord.ButtonStyle.secondary,row=1)
+ @discord.ui.button(label='📜 백줌 3%',style=discord.ButtonStyle.secondary,row=1)
  async def e(self,i,b):await self.go(i,'w3')
  @discord.ui.button(label='🔄 초기화',style=discord.ButtonStyle.danger,row=2)
  async def f(self,i,b):
@@ -102,9 +102,9 @@ async def surfboard_rank(i:discord.Interaction):
     if not allowed(i):
         return await i.response.send_message("❌ 이 게시판에서는 사용할 수 없습니다.", ephemeral=True)
 
-    con = connect()
-    rows = con.execute("SELECT * FROM items WHERE destroyed=0").fetchall()
-    con.close()
+    db = con()
+    rows = db.execute("SELECT * FROM items WHERE destroyed=0").fetchall()
+    db.close()
 
     ranked = []
     for r in rows:
