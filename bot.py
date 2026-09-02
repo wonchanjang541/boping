@@ -3,7 +3,7 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 from PIL import Image,ImageDraw,ImageFont
-TOKEN=os.getenv('DISCORD_BOT_TOKEN'); ROOT=Path(__file__).parent; DB=ROOT/'surfboard.db'; IMG=ROOT/'purple_surfboard_base.png'; ALLOWED_CHANNEL_ID=0
+TOKEN=os.getenv('DISCORD_BOT_TOKEN'); ROOT=Path(__file__).parent; DB=ROOT/'surfboard.db'; IMG=ROOT/'purple_surfboard_base.png'; ALLOWED_CHANNEL_ID = 1544573699397656677
 
 def ft(n):
  for p in ['/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc','/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf']:
